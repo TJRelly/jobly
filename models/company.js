@@ -56,6 +56,12 @@ class Company {
             const whereExpressions = [];
             const { name, minEmployees, maxEmployees } = filters;
 
+            //throw error if invalid employee data
+            if (+filters.minEmployees > +filters.maxEmployees)
+                throw new BadRequestError(
+                    "Minimum employees can not be greater than max employees"
+                );
+
             // add-ons only if they exist
             if (name) whereExpressions.push(`name ILIKE '%${name}%'`);
             if (minEmployees)
@@ -67,10 +73,10 @@ class Company {
                 baseQuery += " WHERE " + whereExpressions.join(" AND ");
         }
 
+        //puts company list in alphabetical order
         baseQuery += " ORDER BY name";
 
         const companiesRes = await db.query(baseQuery);
-
         return companiesRes.rows;
     }
 

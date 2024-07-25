@@ -1,0 +1,41 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "properties": {
+        "name": {
+            "type": "string",
+            "default": "",
+            "title": "The name Schema",
+            "minLength": 1,
+            "examples": [
+                "Walmart"
+            ]
+        },
+        "minEmployees": {
+            "type": "integer",
+            "default": 0,
+            "title": "The minEmployees Schema",
+            "minimum": 0,
+            "examples": [
+                500
+            ]
+        },
+        "maxEmployees": {
+            "type": "integer",
+            "default": 0,
+            "title": "The maxEmployees Schema",
+            "minimum": 0,
+            "examples": [
+                1000
+            ]
+        }
+    },
+    "examples": [{
+        "name": "Walmart",
+        "minEmployees": 500,
+        "maxEmployees": 1000
+    }]
+}

@@ -116,6 +116,21 @@ describe("findAll", function () {
     });
 });
 
+describe("findAll", function () {
+    test("error: with invalid employee data", async function () {
+        const filter = {
+            name: "c",
+            minEmployees: "3",
+            maxEmployees: "2",
+        };
+        try {
+            await Company.findAll(filter);
+        } catch (err) {
+            expect(err instanceof BadRequestError).toBeTruthy();
+        }
+    });
+});
+
 /************************************** get */
 
 describe("get", function () {
