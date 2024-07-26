@@ -60,34 +60,31 @@ describe("create", function () {
 
 /************************************** findAll */
 
-// describe("findAll", function () {
-//     test("works: no filter", async function () {
-//         let companies = await Company.findAll();
-//         expect(companies).toEqual([
-//             {
-//                 handle: "c1",
-//                 name: "C1",
-//                 description: "Desc1",
-//                 numEmployees: 1,
-//                 logoUrl: "http://c1.img",
-//             },
-//             {
-//                 handle: "c2",
-//                 name: "C2",
-//                 description: "Desc2",
-//                 numEmployees: 2,
-//                 logoUrl: "http://c2.img",
-//             },
-//             {
-//                 handle: "c3",
-//                 name: "C3",
-//                 description: "Desc3",
-//                 numEmployees: 3,
-//                 logoUrl: "http://c3.img",
-//             },
-//         ]);
-//     });
-// });
+describe("findAll", function () {
+    test("works: no filter", async function () {
+        let jobs = await Job.findAll();
+        expect(jobs).toEqual([
+            {
+                title: "j1",
+                salary: 100000,
+                equity: "0.1",
+                companyHandle: "c1",
+            },
+            {
+                title: "j2",
+                salary: 75000,
+                equity: "0",
+                companyHandle: "c2",
+            },
+            {
+                title: "j3",
+                salary: 50000,
+                equity: null,
+                companyHandle: "c3",
+            },
+        ]);
+    });
+});
 
 // describe("findAll", function () {
 //     test("works: with filter", async function () {
@@ -134,27 +131,26 @@ describe("create", function () {
 
 // /************************************** get */
 
-// describe("get", function () {
-//     test("works", async function () {
-//         let company = await Company.get("c1");
-//         expect(company).toEqual({
-//             handle: "c1",
-//             name: "C1",
-//             description: "Desc1",
-//             numEmployees: 1,
-//             logoUrl: "http://c1.img",
-//         });
-//     });
+describe("get", function () {
+    test("works", async function () {
+        let job = await Job.get("j1", "c1");
+        expect(job).toEqual({
+            title: "j1",
+            salary: 100000,
+            equity: "0.1",
+            companyHandle: "c1",
+        });
+    });
 
-//     test("not found if no such company", async function () {
-//         try {
-//             await Company.get("nope");
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof NotFoundError).toBeTruthy();
-//         }
-//     });
-// });
+    test("not found if no such job", async function () {
+        try {
+            await Job.get("nope","nope");
+            fail();
+        } catch (err) {
+            expect(err instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
 
 // /************************************** update */
 
