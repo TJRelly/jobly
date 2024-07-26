@@ -11,6 +11,7 @@ const {
     commonAfterEach,
     commonAfterAll,
     u1Token,
+    u2Token,
 } = require("./_testCommon");
 const { BadRequestError } = require("../expressError");
 
@@ -30,7 +31,7 @@ describe("POST /companies", function () {
         numEmployees: 10,
     };
 
-    test("ok for users", async function () {
+    test("ok for admin users", async function () {
         const resp = await request(app)
             .post("/companies")
             .send(newCompany)
@@ -39,6 +40,19 @@ describe("POST /companies", function () {
         expect(resp.body).toEqual({
             company: newCompany,
         });
+    });
+
+    test("error for nonadmin users", async function () {
+        const resp = await request(app)
+            .post("/companies")
+            .send(newCompany)
+            .set("authorization", `Bearer ${u2Token}`);
+        expect(resp.statusCode).toEqual(401);
+    });
+
+    test("throws error for nonusers", async function () {
+        const resp = await request(app).post("/companies").send(newCompany);
+        expect(resp.statusCode).toEqual(401);
     });
 
     test("bad request with missing data", async function () {
@@ -184,7 +198,17 @@ describe("PATCH /companies/:handle", function () {
         });
     });
 
-    test("unauth for anon", async function () {
+    test("unauth error for non admin users", async function () {
+        const resp = await request(app)
+            .patch(`/companies/c1`)
+            .send({
+                name: "C1-new",
+            })
+            .set("authorization", `Bearer ${u2Token}`);
+        expect(resp.statusCode).toEqual(401);
+    });
+
+    test("unauth error for non users", async function () {
         const resp = await request(app).patch(`/companies/c1`).send({
             name: "C1-new",
         });
