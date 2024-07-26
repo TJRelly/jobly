@@ -86,18 +86,18 @@ class Job {
      * Throws NotFoundError if not found.
      **/
 
-    static async get(title, companyHandle) {
+    static async get(id) {
         const jobRes = await db.query(
             `SELECT title, salary, equity, company_handle AS "companyHandle"
            FROM jobs
-           WHERE title = $1
-           AND company_handle = $2`,
-            [title, companyHandle]
+           WHERE id = $1`,
+            [id]
         );
 
         const job = jobRes.rows[0];
 
-        if (!job) throw new NotFoundError(`No job: ${title} at ${companyHandle}`);
+        if (!job)
+            throw new NotFoundError(`No job: at ${id}`);
 
         return job;
     }
@@ -114,27 +114,26 @@ class Job {
      * Throws NotFoundError if not found.
      */
 
-    static async update(handle, data) {
+    static async update(id, data) {
         const { setCols, values } = sqlForPartialUpdate(data, {
-            numEmployees: "num_employees",
-            logoUrl: "logo_url",
+            companyHandle: "company_handle",
         });
-        const handleVarIdx = "$" + (values.length + 1);
+        const idVarIdx = "$" + (values.length + 1);
 
         const querySql = `UPDATE jobs
                       SET ${setCols}
-                      WHERE handle = ${handleVarIdx}
-                      RETURNING handle,
-                                name,
-                                description,
-                                num_employees AS "numEmployees",
-                                logo_url AS "logoUrl"`;
-        const result = await db.query(querySql, [...values, handle]);
-        const company = result.rows[0];
+                      WHERE handle = ${idVarIdx}
+                      RETURNING title,
+                                salary,
+                                equity,
+                                company_handle AS "companyHandle"`;
 
-        if (!company) throw new NotFoundError(`No company: ${handle}`);
+        const result = await db.query(querySql, [...values, id]);
+        const job = result.rows[0];
 
-        return company;
+        if (!job) throw new NotFoundError(`No job: ${job}`);
+
+        return job;
     }
 
     // /** Delete given company from database; returns undefined.
