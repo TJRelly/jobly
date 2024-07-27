@@ -96,8 +96,7 @@ class Job {
 
         const job = jobRes.rows[0];
 
-        if (!job)
-            throw new NotFoundError(`No job: at ${id}`);
+        if (!job) throw new NotFoundError(`No job: at ${id}`);
 
         return job;
     }
@@ -119,11 +118,11 @@ class Job {
             companyHandle: "company_handle",
         });
         const idVarIdx = "$" + (values.length + 1);
-
         const querySql = `UPDATE jobs
                       SET ${setCols}
-                      WHERE handle = ${idVarIdx}
-                      RETURNING title,
+                      WHERE id = ${idVarIdx}
+                      RETURNING id, 
+                                title,
                                 salary,
                                 equity,
                                 company_handle AS "companyHandle"`;
@@ -136,23 +135,23 @@ class Job {
         return job;
     }
 
-    // /** Delete given company from database; returns undefined.
-    //  *
-    //  * Throws NotFoundError if company not found.
-    //  **/
+    /** Delete given company from database; returns undefined.
+     *
+     * Throws NotFoundError if company not found.
+     **/
 
-    // static async remove(handle) {
-    //     const result = await db.query(
-    //         `DELETE
-    //        FROM jobs
-    //        WHERE handle = $1
-    //        RETURNING handle`,
-    //         [handle]
-    //     );
-    //     const company = result.rows[0];
+    static async remove(id) {
+        const result = await db.query(
+            `DELETE
+           FROM jobs
+           WHERE id = $1
+           RETURNING id`,
+            [id]
+        );
+        const job = result.rows[0];
 
-    //     if (!company) throw new NotFoundError(`No company: ${handle}`);
-    // }
+        if (!job) throw new NotFoundError(`No job: ${id}`);
+    }
 }
 
 module.exports = Job;

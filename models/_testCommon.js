@@ -52,9 +52,22 @@ async function commonAfterAll() {
     await db.end();
 }
 
+async function getId() {
+    const findId = await db.query(
+        `SELECT id
+            FROM jobs
+            WHERE title = 'j1'
+            AND company_handle = 'c1'`
+    );
+
+    let jobId = findId.rows[0].id;
+    return jobId;
+}
+
 module.exports = {
     commonBeforeAll,
     commonBeforeEach,
     commonAfterEach,
     commonAfterAll,
+    getId,
 };
