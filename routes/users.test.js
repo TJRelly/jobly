@@ -15,7 +15,13 @@ const {
     u2Token,
 } = require("./_testCommon");
 
-beforeAll(commonBeforeAll);
+let jobId;
+beforeAll(async () => {
+    await commonBeforeAll();
+    const result = await db.query(`SELECT id FROM jobs WHERE title='j1'`);
+    jobId = result.rows[0].id; // Store the job ID retrieved from the database
+});
+
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
@@ -126,6 +132,39 @@ describe("POST /users", function () {
     });
 });
 
+/************************************** POST /users */
+// u1 - is admin
+// u2 - is non admin
+
+describe("POST /users/:username/jobs/:id", function () {
+    test("works for admin:", async function () {
+        const resp = await request(app)
+            .post(`/users/u2/jobs/${jobId}`)
+            .set("authorization", `Bearer ${u1Token}`);
+        expect(resp.statusCode).toEqual(201);
+        expect(resp.body).toEqual({
+            applied: { username: "u2", jobId: jobId },
+        });
+    });
+
+    test("works for correct user nonadmin:", async function () {
+        const resp = await request(app)
+            .post(`/users/u2/jobs/${jobId}`)
+            .set("authorization", `Bearer ${u2Token}`);
+        expect(resp.statusCode).toEqual(201);
+        expect(resp.body).toEqual({
+            applied: { username: "u2", jobId: jobId },
+        });
+    });
+
+    test("unauth for non admin:", async function () {
+        const resp = await request(app)
+            .post(`/users/u1/jobs/${jobId}`)
+            .set("authorization", `Bearer ${u2Token}`);
+        expect(resp.statusCode).toEqual(401);
+    });
+});
+
 /************************************** GET /users */
 
 describe("GET /users", function () {
@@ -141,6 +180,7 @@ describe("GET /users", function () {
                     lastName: "U1L",
                     email: "user1@user.com",
                     isAdmin: true,
+                    jobs: [],
                 },
                 {
                     username: "u2",
@@ -148,6 +188,7 @@ describe("GET /users", function () {
                     lastName: "U2L",
                     email: "user2@user.com",
                     isAdmin: false,
+                    jobs: [],
                 },
                 {
                     username: "u3",
@@ -155,6 +196,7 @@ describe("GET /users", function () {
                     lastName: "U3L",
                     email: "user3@user.com",
                     isAdmin: false,
+                    jobs: [],
                 },
             ],
         });
