@@ -93,6 +93,13 @@ async function commonAfterAll() {
 const u1Token = createToken({ username: "u1", isAdmin: true });
 const u2Token = createToken({ username: "u2", isAdmin: false });
 
+
+async function getJobId() {
+   
+}
+
+let jobId = getJobId()
+
 module.exports = {
     commonBeforeAll,
     commonBeforeEach,

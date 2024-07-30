@@ -15,7 +15,13 @@ const {
 } = require("./_testCommon");
 const { BadRequestError } = require("../expressError");
 
-beforeAll(commonBeforeAll);
+let jobId;
+// beforeAll(commonBeforeAll);
+beforeAll(async () => {
+    await commonBeforeAll(); // Setup common before all tests
+    const result = await db.query(`SELECT id FROM jobs WHERE title='j1'`);
+    jobId = result.rows[0].id; // Store the job ID retrieved from the database
+});
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
@@ -139,40 +145,40 @@ describe("GET /jobs", function () {
     });
 });
 
-// /************************************** GET /jobs/:handle */
+// /************************************** GET /jobs/:id */
 
-// describe("GET /jobs/:handle", function () {
-//     test("works for anon", async function () {
-//         const resp = await request(app).get(`/jobs/c1`);
-//         expect(resp.body).toEqual({
-//             job: {
-//                 handle: "c1",
-//                 name: "C1",
-//                 description: "Desc1",
-//                 numEmployees: 1,
-//                 logoUrl: "http://c1.img",
-//             },
-//         });
-//     });
+describe("GET /jobs/:id", function () {
+    test("works for anon", async function () {
+        console.log(jobId);
+        const resp = await request(app).get(`/jobs/${jobId}`);
+        expect(resp.body).toEqual({
+            job: {
+                title: "j1",
+                salary: 100000,
+                equity: "0.1",
+                companyHandle: "c1",
+            },
+        });
+    });
 
-//     test("works for anon: job w/o jobs", async function () {
-//         const resp = await request(app).get(`/jobs/c2`);
-//         expect(resp.body).toEqual({
-//             job: {
-//                 handle: "c2",
-//                 name: "C2",
-//                 description: "Desc2",
-//                 numEmployees: 2,
-//                 logoUrl: "http://c2.img",
-//             },
-//         });
-//     });
+    //     test("works for anon: job w/o jobs", async function () {
+    //         const resp = await request(app).get(`/jobs/c2`);
+    //         expect(resp.body).toEqual({
+    //             job: {
+    //                 handle: "c2",
+    //                 name: "C2",
+    //                 description: "Desc2",
+    //                 numEmployees: 2,
+    //                 logoUrl: "http://c2.img",
+    //             },
+    //         });
+    //     });
 
-//     test("not found for no such job", async function () {
-//         const resp = await request(app).get(`/jobs/nope`);
-//         expect(resp.statusCode).toEqual(404);
-//     });
-// });
+        test("not found for no such job", async function () {
+            const resp = await request(app).get(`/jobs/0`);
+            expect(resp.statusCode).toEqual(404);
+        });
+});
 
 // /************************************** PATCH /jobs/:handle */
 

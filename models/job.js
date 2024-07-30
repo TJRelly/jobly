@@ -48,6 +48,7 @@ class Job {
      * */
 
     static async findAll(filters) {
+        
         let baseQuery = `SELECT title, salary, equity, company_handle AS "companyHandle"
                         FROM jobs`;
 
@@ -74,7 +75,7 @@ class Job {
 
         //puts company list in alphabetical order
         baseQuery += " ORDER BY title";
-
+        
         const jobsRes = await db.query(baseQuery);
         return jobsRes.rows;
     }
