@@ -103,7 +103,7 @@ describe("GET /jobs", function () {
                     title: "j2",
                     salary: 75000,
                     equity: "0",
-                    companyHandle: "c2",
+                    companyHandle: "c3",
                 },
                 {
                     title: "j3",
@@ -148,7 +148,7 @@ describe("GET /jobs", function () {
                         title: "j2",
                         salary: 75000,
                         equity: "0",
-                        companyHandle: "c2",
+                        companyHandle: "c3",
                     },
                 ],
             });
@@ -190,7 +190,7 @@ describe("GET /jobs", function () {
                         title: "j2",
                         salary: 75000,
                         equity: "0",
-                        companyHandle: "c2",
+                        companyHandle: "c3",
                     },
                     {
                         title: "j3",
