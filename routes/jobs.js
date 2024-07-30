@@ -12,6 +12,8 @@ const Job = require("../models/job");
 // const jobNewSchema = require("../schemas/jobNew.json");
 // const jobUpdateSchema = require("../schemas/jobUpdate.json");
 const jobFindSchema = require("../schemas/jobFind.json");
+const jobUpdateSchema = require("../schemas/jobUpdate.json")
+const jobNewSchema = require("../schemas/jobNew.json")
 
 const router = new express.Router();
 
@@ -83,6 +85,7 @@ router.post(
             const job = await Job.create(req.body);
             return res.status(201).json({ job });
         } catch (err) {
+            console.log(err)
             return next(err);
         }
     }
@@ -100,7 +103,7 @@ router.post(
  */
 
 router.patch(
-    "/:handle",
+    "/:id",
     ensureLoggedIn,
     ensureIsAdmin,
     async function (req, res, next) {
@@ -111,7 +114,7 @@ router.patch(
                 throw new BadRequestError(errs);
             }
 
-            const job = await Job.update(req.params.handle, req.body);
+            const job = await Job.update(req.params.id, req.body);
             return res.json({ job });
         } catch (err) {
             return next(err);
@@ -125,13 +128,13 @@ router.patch(
  */
 
 router.delete(
-    "/:handle",
+    "/:id",
     ensureLoggedIn,
     ensureIsAdmin,
     async function (req, res, next) {
         try {
-            await Job.remove(req.params.handle);
-            return res.json({ deleted: req.params.handle });
+            await Job.remove(req.params.id);
+            return res.json({ deleted: req.params.id });
         } catch (err) {
             return next(err);
         }
