@@ -12,8 +12,8 @@ const Job = require("../models/job");
 // const jobNewSchema = require("../schemas/jobNew.json");
 // const jobUpdateSchema = require("../schemas/jobUpdate.json");
 const jobFindSchema = require("../schemas/jobFind.json");
-const jobUpdateSchema = require("../schemas/jobUpdate.json")
-const jobNewSchema = require("../schemas/jobNew.json")
+const jobUpdateSchema = require("../schemas/jobUpdate.json");
+const jobNewSchema = require("../schemas/jobNew.json");
 
 const router = new express.Router();
 
@@ -30,8 +30,15 @@ const router = new express.Router();
 
 router.get("/", async function (req, res, next) {
     const q = req.query;
+
+    if (q.hasEquity === "true") q.hasEquity = true;
+    if (q.hasEquity === "false") q.hasEquity = false;
+
+    if (q.minSalary) q.minSalary = +q.minSalary;
+
     try {
         const validator = jsonschema.validate(q, jobFindSchema);
+        console.log(q, validator.valid);
         if (!validator.valid) {
             const errs = validator.errors.map((e) => e.stack);
             throw new BadRequestError(errs);
@@ -44,9 +51,9 @@ router.get("/", async function (req, res, next) {
     }
 });
 
-/** GET /[handle]  =>  { job }
+/** GET /[id]  =>  { job }
  *
- *  Job is { handle, name, description, numEmployees, logoUrl, jobs }
+ *  Job is { id, title, salary, equity }
  *   where jobs is [{ id, title, salary, equity }, ...]
  *
  * Authorization required: none
@@ -63,9 +70,9 @@ router.get("/:id", async function (req, res, next) {
 
 /** POST / { job } =>  { job }
  *
- * job should be { handle, name, description, numEmployees, logoUrl }
+ * job should be { id, title, salary, equity }
  *
- * Returns { handle, name, description, numEmployees, logoUrl }
+ * Returns { id, title, salary, equity }
  *
  * Authorization required: login
  */
@@ -85,7 +92,7 @@ router.post(
             const job = await Job.create(req.body);
             return res.status(201).json({ job });
         } catch (err) {
-            console.log(err)
+            console.log(err);
             return next(err);
         }
     }
@@ -95,9 +102,9 @@ router.post(
  *
  * Patches job data.
  *
- * fields can be: { name, description, numEmployees, logo_url }
+ * fields can be: { id, title, salary, equity }
  *
- * Returns { handle, name, description, numEmployees, logo_url }
+ * Returns { id, title, salary, equity }
  *
  * Authorization required: login
  */
@@ -122,7 +129,7 @@ router.patch(
     }
 );
 
-/** DELETE /[handle]  =>  { deleted: handle }
+/** DELETE /[id]  =>  { deleted: id }
  *
  * Authorization: login
  */

@@ -53,20 +53,12 @@ class Job {
 
         if (filters) {
             const whereExpressions = [];
-            const { name, minEmployees, maxEmployees } = filters;
-
-            //throw error if invalid employee data
-            if (+filters.minEmployees > +filters.maxEmployees)
-                throw new BadRequestError(
-                    "Minimum employees can not be greater than max employees"
-                );
+            const { title, minSalary, hasEquity } = filters;
 
             // add-ons only if they exist
-            if (name) whereExpressions.push(`name ILIKE '%${name}%'`);
-            if (minEmployees)
-                whereExpressions.push(`num_employees >= ${minEmployees}`);
-            if (maxEmployees)
-                whereExpressions.push(`num_employees <= ${maxEmployees}`);
+            if (title) whereExpressions.push(`title ILIKE '%${title}%'`);
+            if (minSalary) whereExpressions.push(`salary >= ${minSalary}`);
+            if (hasEquity) whereExpressions.push(`equity > 0`);
 
             if (whereExpressions.length > 0)
                 baseQuery += " WHERE " + whereExpressions.join(" AND ");
@@ -106,9 +98,9 @@ class Job {
      * This is a "partial update" --- it's fine if data doesn't contain all the
      * fields; this only changes provided ones.
      *
-     * Data can include: {name, description, numEmployees, logoUrl}
+     * Data can include: { title, salary, equity }
      *
-     * Returns {handle, name, description, numEmployees, logoUrl}
+     * Returns { id, title, salary, equity }
      *
      * Throws NotFoundError if not found.
      */

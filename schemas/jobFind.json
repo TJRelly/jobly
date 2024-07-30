@@ -10,38 +10,30 @@
             "default": "",
             "title": "The title Schema",
             "examples": [
-                "newTitle"
+                "j1"
             ]
         },
-        "salary": {
+        "minSalary": {
             "type": "integer",
             "default": 0,
-            "title": "The salary Schema",
+            "title": "The minSalary Schema",
             "examples": [
-                100000
-            ]
+                50000
+            ],
+            "minimum": 0
         },
-        "equity": {
-            "type": "number",
-            "default": 0.0,
-            "title": "The equity Schema",
+        "hasEquity": {
+            "type": "boolean",
+            "title": "The hasEquity Schema",
             "examples": [
-                0.5
-            ]
-        },
-        "company_handle": {
-            "type": "string",
-            "default": "",
-            "title": "The company_handle Schema",
-            "examples": [
-                "c1"
+                true
             ]
         }
     },
+    "additionalProperties": false, 
     "examples": [{
-        "title": "newTitle",
-        "salary": 100000,
-        "equity": 0.5,
-        "company_handle": "c1"
+        "title": "j1",
+        "minSalary": 50000,
+        "hasEquity": true
     }]
 }

@@ -63,27 +63,27 @@ describe("POST /jobs", function () {
         expect(resp.statusCode).toEqual(401);
     });
 
-        test("bad request with missing data", async function () {
-            const resp = await request(app)
-                .post("/jobs")
-                .send({
-                    handle: "new",
-                    numEmployees: 10,
-                })
-                .set("authorization", `Bearer ${u1Token}`);
-            expect(resp.statusCode).toEqual(400);
-        });
+    test("bad request with missing data", async function () {
+        const resp = await request(app)
+            .post("/jobs")
+            .send({
+                handle: "new",
+                numEmployees: 10,
+            })
+            .set("authorization", `Bearer ${u1Token}`);
+        expect(resp.statusCode).toEqual(400);
+    });
 
-        test("bad request with invalid data", async function () {
-            const resp = await request(app)
-                .post("/jobs")
-                .send({
-                    ...newJob,
-                    equity: "wrong format",
-                })
-                .set("authorization", `Bearer ${u1Token}`);
-            expect(resp.statusCode).toEqual(400);
-        });
+    test("bad request with invalid data", async function () {
+        const resp = await request(app)
+            .post("/jobs")
+            .send({
+                ...newJob,
+                equity: "wrong format",
+            })
+            .set("authorization", `Bearer ${u1Token}`);
+        expect(resp.statusCode).toEqual(400);
+    });
 });
 
 /************************************** GET /jobs */
@@ -115,20 +115,118 @@ describe("GET /jobs", function () {
         });
     });
 
-    describe("GET /jobs with filter: no name", function () {
+    describe("GET /jobs with filter: title", function () {
+        test("works", async function () {
+            const resp = await request(app).get("/jobs?title=j3");
+
+            expect(resp.body).toEqual({
+                jobs: [
+                    {
+                        title: "j3",
+                        salary: 50000,
+                        equity: null,
+                        companyHandle: "c3",
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("GET /jobs with filter: salary", function () {
+        test("works", async function () {
+            const resp = await request(app).get("/jobs?minSalary=75000");
+
+            expect(resp.body).toEqual({
+                jobs: [
+                    {
+                        title: "j1",
+                        salary: 100000,
+                        equity: "0.1",
+                        companyHandle: "c1",
+                    },
+                    {
+                        title: "j2",
+                        salary: 75000,
+                        equity: "0",
+                        companyHandle: "c2",
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("GET /jobs with filter: equity", function () {
+        test("works", async function () {
+            const resp = await request(app).get("/jobs?hasEquity=true");
+
+            expect(resp.body).toEqual({
+                jobs: [
+                    {
+                        title: "j1",
+                        salary: 100000,
+                        equity: "0.1",
+                        companyHandle: "c1",
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("GET /jobs with filters 2 of 3: title, equity", function () {
+        test("works", async function () {
+            const resp = await request(app).get(
+                "/jobs?title=j&hasEquity=false"
+            );
+
+            expect(resp.body).toEqual({
+                jobs: [
+                    {
+                        title: "j1",
+                        salary: 100000,
+                        equity: "0.1",
+                        companyHandle: "c1",
+                    },
+                    {
+                        title: "j2",
+                        salary: 75000,
+                        equity: "0",
+                        companyHandle: "c2",
+                    },
+                    {
+                        title: "j3",
+                        salary: 50000,
+                        equity: null,
+                        companyHandle: "c3",
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("GET /jobs with filter: no title", function () {
         test("query string name error", async function () {
             try {
-                await request(app).get("/jobs?name=");
+                await request(app).get("/jobs?title=");
             } catch (err) {
                 expect(err instanceof BadRequestError).toBeTruthy();
             }
         });
     });
 
-    describe("GET /jobs with filter: num of employees error", function () {
-        test("query string num of employees error", async function () {
+    describe("GET /jobs with filter: equity error", function () {
+        test("query string equity error", async function () {
             try {
-                await request(app).get("/jobs?maxEmployees=-7");
+                await request(app).get("/jobs?equity=banana");
+            } catch (err) {
+                expect(err instanceof BadRequestError).toBeTruthy();
+            }
+        });
+    });
+
+    describe("GET /jobs with filter: salary error", function () {
+        test("query string salary error", async function () {
+            try {
+                await request(app).get("/jobs?salary=-1");
             } catch (err) {
                 expect(err instanceof BadRequestError).toBeTruthy();
             }
